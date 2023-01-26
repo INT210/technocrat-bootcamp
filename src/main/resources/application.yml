@@ -1,0 +1,6 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://root:root@bootcamp.c2jwxx4.mongodb.net/?retryWrites=true&w=majority
+      database: bootcamp
+
