@@ -14,6 +14,9 @@ public interface UserRepo extends MongoRepository <Users, Long > {
 //    Boolean existsByUsername(String username);
 //
 //    Boolean existsByEmail(String email);
-@Query(value="{'user_id' : $0}", delete = true)
+@Query(value="{'id' : $0}", delete = true)
 public Users deleteUserById(Long id);
+
+//    @Query(value="{'email' : $0}", )
+//    public Users findUserByEmail(String email);
 }

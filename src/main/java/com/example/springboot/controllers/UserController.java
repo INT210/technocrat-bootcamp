@@ -1,7 +1,11 @@
 package com.example.springboot.controllers;
 
+//import com.example.springboot.DAO.AuthRequest;
 import com.example.springboot.Services.EventService;
+//import com.example.springboot.Services.Jwtservice;
 import com.example.springboot.Services.UserService;
+import com.example.springboot.models.SignIn;
+import com.example.springboot.models.Signup;
 import com.example.springboot.models.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +21,11 @@ public class UserController {
     UserService userServiceObj;
 
     EventService eventServiceObj;
-    @PostMapping(path="/addUser") /////////Add users to the database
-    public String addUser(@RequestBody Users user){
-        userServiceObj.addUser(user);
+    //@Autowired
+    //private Jwtservice jwtservice;
+    @PostMapping(path="/registerUser") /////////Add users to the database
+    public String addUserEnc(@RequestBody Users user){
+        userServiceObj.addUserEnc(user);
         return "user added succesfuly";
     }
 
@@ -45,6 +51,21 @@ public class UserController {
         return "user deleted succesfully";
     }
 
+    @PostMapping("/signIn")
+    public String Authenticate(@RequestBody SignIn signInDetails)
+    {
+        return userServiceObj.Authenticate(signInDetails);
+    }
+
+//    @PostMapping("/signup")
+//    public String Signup(@RequestBody  signUpDetails)
+//    {
+//        return userServiceObj.registerUser(signUpDetails);
+//    }
+//    @PostMapping("/authenticate")
+//    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest){
+//
+//    }
 
 
 }

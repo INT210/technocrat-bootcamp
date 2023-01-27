@@ -3,6 +3,7 @@ package com.example.springboot.models;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -20,10 +21,16 @@ public class Users {
    //@Id
     private Long id;
 
+    @NonNull
     private String name;
+    @NonNull
     private String pwd;
+
+    @NonNull
     private String email;
     private List<String> interest;
+
+    @NonNull
     private String city;
 
     private List<Long> event_regd_id;
