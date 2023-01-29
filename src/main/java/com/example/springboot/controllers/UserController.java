@@ -23,17 +23,21 @@ public class UserController {
     EventService eventServiceObj;
     //@Autowired
     //private Jwtservice jwtservice;
-    @PostMapping(path="/registerUser") /////////Add users to the database
-    public String addUserEnc(@RequestBody Users user){
-        userServiceObj.addUserEnc(user);
-        return "user added succesfuly";
-    }
 
-    @GetMapping(path="/user/{userid}") /////Finding users by userid
-    public Optional<Users> getUserById(@PathVariable Long userid){
-        Optional<Users> user=userServiceObj.getUserByID(userid);
+    @CrossOrigin
+    @PostMapping(path="/registerUser") /////////Add users to the database
+    public Users addUserEnc(@RequestBody Users user){
+        userServiceObj.addUserEnc(user);
         return user;
     }
+
+    @CrossOrigin
+    @GetMapping(path="/user/{email}") /////Finding users by userid
+    public Optional<Users> getUserById(@PathVariable String email){
+        Optional<Users> user=userServiceObj.findUser(email);
+        return user;
+    }
+    @CrossOrigin
     @PutMapping(path = "/add/interest/{userid}/{text}")  //// Add interest to the particular id
     public String addInterest(@PathVariable Long userid,@PathVariable String text){
         return userServiceObj.addInterest(userid,text);
@@ -45,16 +49,28 @@ public class UserController {
         return userlist;
     }
 
-    @DeleteMapping(path = "/deluser/{userid}") ////Delete a particular user by it's userid
-    public String deleteUserById(@PathVariable Long userid ){
-        userServiceObj.deleteUserByID(userid);
+    @CrossOrigin
+    @DeleteMapping(path = "/deluser/{email}") ////Delete a particular user by it's userid
+    public String deleteUserById(@PathVariable String email ){
+        userServiceObj.deleteUserByEmail(email);
         return "user deleted succesfully";
     }
 
+    @CrossOrigin
     @PostMapping("/signIn")
-    public String Authenticate(@RequestBody SignIn signInDetails)
+    public SignIn Authenticate(@RequestBody SignIn signInDetails)
     {
-        return userServiceObj.Authenticate(signInDetails);
+        System.out.println("Working login");
+        if(userServiceObj.Authenticate(signInDetails))
+        {
+            System.out.println("Workng User");
+            return signInDetails;
+        }
+        else
+        {
+            signInDetails.setEmail("null");
+            return signInDetails;
+        }
     }
 
 //    @PostMapping("/signup")

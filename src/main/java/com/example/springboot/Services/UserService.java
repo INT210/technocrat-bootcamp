@@ -3,6 +3,7 @@ package com.example.springboot.Services;
 import com.example.springboot.DAO.EventRepo;
 import com.example.springboot.DAO.InterestRepo;
 import com.example.springboot.DAO.UserRepo;
+import com.example.springboot.models.Events;
 import com.example.springboot.models.SignIn;
 import com.example.springboot.models.Signup;
 import com.example.springboot.models.Users;
@@ -11,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 //@AllArgsConstructor
 @Service
@@ -33,17 +36,19 @@ public class UserService {
 //    public void addUser(Users user) {
 //        userRepoObj.save(user);
 //    }
-     Long random_id = 0L;
+     static Long random_id = 0L;
     public void addUserEnc(Users user) {
         String password = user.getPwd();
         String encryptedpassword = PasswordEncryption(password);
         //user.setId();
-
-        random_id++;
-        //System.out.println(random_id);
-        user.setId(random_id);
-        user.setPwd(encryptedpassword);
-        userRepoObj.save(user);
+        if(FindUserIdbyEmail(user.getEmail()) == -1)
+        {
+            random_id++;
+            //System.out.println(random_id);
+            user.setId(random_id);
+            user.setPwd(encryptedpassword);
+            userRepoObj.save(user);
+        }
     }
 
 
@@ -53,6 +58,12 @@ public class UserService {
     public Optional<Users> getUserByID(Long userid) {
         Optional<Users> user=userRepoObj.findById(userid);
         return user;
+    }
+
+    public String getUserNameByUserId(Long Id)
+    {
+        Optional<Users>user=getUserByID(Id);
+        return user.get().getName();
     }
 
 
@@ -66,22 +77,57 @@ public class UserService {
         userRepoObj.deleteById(userid);
     }
 
+    public void deleteUserByEmail(String email)
+    {
+        Long user_id = FindUserIdbyEmail(email);
+        System.out.println(user_id);
+        deleteUserByID(user_id);
+    }
 
-    public String addInterest(Long userid,String interestId) {
-        Optional<Users> user=userRepoObj.findById(userid);
-        if(user.isPresent()){
-            Users users=user.get();
-            List<String> list=users.getInterest();
-                list.add(interestId);
-                users.setInterest(list);
-                userRepoObj.save(users);
-            return "interest added successfully";
-        }
-        else
-        {
-            return "User not Found XD";
-        }
+    public Optional<Users> findUser(String email)
+    {
+        Long user_id = FindUserIdbyEmail(email);
+        System.out.println(user_id);
+        //deleteUserByID(user_id);
+        return getUserByID(user_id);
+    }
 
+    public String addInterest(Long userid,String interest){
+        List<Users> all_usrs=getAllUser();
+        System.out.println(all_usrs);
+        System.out.println(userid);
+        Users user=null;
+        for(Users u: all_usrs) {
+            System.out.println(u.getId());
+            if (u.getId() == userid) {
+//                event=e;
+                Set<String> finalSet_id = new HashSet<>();
+                finalSet_id.add(interest);
+                System.out.println(user);
+                u.setNew_Interest(interest);
+                user = u;
+                userRepoObj.save(user);
+                return "interest added successfully";
+            }
+
+        }
+        return "User Not Found XD";
+    }
+
+    public Long FindUserIdbyEmail(String email) {
+        List<Users> all_usr = getAllUser();
+
+        System.out.println("Reached-1");
+        for (Users u : all_usr) {
+            String temp = (String) u.getEmail();
+            String temp2 = (String) email;
+            System.out.println(temp);
+            if ((u.getEmail()).equalsIgnoreCase(email)) {
+                System.out.println("leve3");
+                return u.getId();
+            }
+        }
+        return -1L;
     }
     public String FindUserByEmail(String email)
     {
@@ -92,7 +138,7 @@ public class UserService {
             //System.out.println("User email is"+ email);
             if(u.getEmail().equals(email)) {
 //               //if(u.)
-                System.out.println("Hii");
+                //System.out.println("Hii");
                 return u.getPwd();
 
             }
@@ -135,7 +181,7 @@ public class UserService {
         //System.out.println("Encrypted password using MD5: " + encryptedpassword);
         return encryptedpassword;
     }
-    public String Authenticate(SignIn signInDetails)
+    public Boolean Authenticate(SignIn signInDetails)
     {
         String password = signInDetails.getPassword(); // take from signin
         String email = signInDetails.getEmail(); // take from signin
@@ -151,11 +197,11 @@ public class UserService {
             if(encryptedpassword.equals(user_password))
             {
 
-                return "Login Successful";
+                return true;
             }
 
         }
-        return "Login Failed";
+        return false;
 
     }
 
@@ -176,122 +222,6 @@ public class UserService {
 
 
 
-
-
-
-
-
-
-//
-//    @Autowired
-//    UserRepo userRepoObj;
-//
-//
-//   @Autowired EventRepo eventRepoObj;
-//    @Autowired  EventService evs;
-//    @Autowired
-//    InterestRepo interestRepoObj;
-//    //Users u;
-//    //Events ev;
-//
-//    public Users createUser(Users user) {return userRepoObj.save(user);}
-//
-////    public Optional<Users> getUserByID(Long userid) {
-////        Optional<Users> user = userRepoObj.findById(userid);
-////        return user;
-////    }
-////    public Users getUserByID(Long userid) {
-////     List<Users> all_usr=getAllUser();
-////     Users u=null;
-////     for(Users v: all_usr)
-////     {
-////         if(v.getUser_id() == userid)
-////         {
-////             u=v;
-////             break;
-////         }
-////     }
-////     return u;
-////}
-//    public Optional<Users> getUserByID(Long userid) {
-//        Optional<Users> user=userRepoObj.findById(userid);
-//        return user;
-//    }
-//
-//
-//
-////   public List<Events> filter_events(List<String>users_interest, String city)
-////   {
-////       List<Events> events_filtered=new ArrayList<>();
-////       List<Events> all_events = evs.getAllEvents();
-////       for(Events e: all_events)
-////       {
-////           System.out.println(e.getEvent_city());
-////           String curr_city=e.getEvent_city();
-////           if(users_interest.contains(e.getEvent_interest_id())) {
-////               //find karo agar user_interest me current event ka intrest  id present id h to usko push karo
-////               events_filtered.add(e);
-////               System.out.println(e);
-////           }
-////       }
-////       for(Events e: events_filtered)
-////       {
-////           System.out.println("What's in our array?");
-////           System.out.println(e);
-////       }
-////       return events_filtered;
-////       //return all_events;
-////   }
-//   public void updateLocationById(Long userid, String updatedLocation) {
-//
-//       Optional<Users> existingUser = userRepoObj.findById(userid);
-//
-//       if (existingUser.isPresent())
-//       {
-//           System.out.println("working patch");
-//           Users u = existingUser.get();
-//           u.setUser_city(updatedLocation);
-//           userRepoObj.save(u);
-//       }
-//    }
-////    updatedLocation.forEach((key, value) -> {
-////               Field loc = ReflectionUtils.findField(Users.class, key);
-////               loc.setAccessible(true);
-////               ReflectionUtils.setField(loc, existingUser.get(), value);
-//
-//        //return userRepoObj.save(existingUser.get());
-//        public String Addinterest(Long userid,String interestId) {
-//
-//            Optional<Users> user=userRepoObj.findById(userid);
-//            if(user.isPresent()){
-//                System.out.println("hi");
-//                Users users=user.get();
-//                List<String> list=users.getInterest();
-//                list.add(interestId);
-//                users.setInterest(list);
-//                userRepoObj.save(users);
-//            }
-//            return "interest added successfully";
-//        }
-//
-//
-//
-//    public List<Users> getAllUser() {
-//        return userRepoObj.findAll();
-//        //return userRepoObj.findAll();
-//    }
-//
-//    public void deleteUserByID(Long userid) {
-//        userRepoObj.deleteById(userid);
-//    }
-//    @Query(value="{'id' : $0}", delete = true)
-//    public Person deleteById (String id);
-
-
-//    public Optional<Events>getEventswrtId(long interest_id)
-//    {
-//        return eventRepoObj.findById(interest_id);
-//    }
 
 }
 

@@ -7,12 +7,15 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Getter
 @Setter
-@Document(collection = "users")
+@Document(collection = "user")
 //@AllArgsConstructor
 //@NoArgsConstructor
 //@RestController
@@ -28,22 +31,15 @@ public class Users {
 
     @NonNull
     private String email;
-    private List<String> interest;
+    private Set<String> interest=new HashSet<>();
 
     @NonNull
     private String city;
 
-    private List<Long> event_regd_id;
+    private Set<Long> event_regd_id=new HashSet<>();
 
-    public Users(Long id, String name, String pwd, String email, List<String> interest, String city, List<Long> event_regd_id) {
-        this.id = id;
-        this.name = name;
-        this.pwd = pwd;
-        this.email = email;
-        this.interest = interest;
-        this.city = city;
-        this.event_regd_id = event_regd_id;
-    }
+    private String new_int;
+
 
     public Long getId() {
         return id;
@@ -77,11 +73,11 @@ public class Users {
         this.email = email;
     }
 
-    public List<String> getInterest() {
+    public Set<String> getInterest() {
         return interest;
     }
 
-    public void setInterest(List<String> interest) {
+    public void setInterest(Set<String> interest) {
         this.interest = interest;
     }
 
@@ -93,11 +89,25 @@ public class Users {
         this.city = city;
     }
 
-    public List<Long> getEvent_regd_id() {
+    public Set<Long> getEvent_regd_id() {
         return event_regd_id;
     }
 
-    public void setEvent_regd_id(List<Long> event_regd_id) {
+    public void setEvent_regd_id(Set<Long> event_regd_id) {
         this.event_regd_id = event_regd_id;
+    }
+
+    public String getNew_int() {
+        return new_int;
+    }
+
+    public void setNew_int(String new_int) {
+        this.new_int = new_int;
+    }
+
+    public void setNew_Interest(String new_int) {
+        this.new_int = new_int;
+        this.interest.add(new_int);
+
     }
 }
